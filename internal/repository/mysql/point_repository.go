@@ -50,6 +50,25 @@ func (r *PointRepository) GetUserPoint(ctx context.Context, userID int64) (*poin
 	return &up, nil
 }
 
+// CreateUserPoint 사용자 포인트 생성
+func (r *PointRepository) CreateUserPoint(ctx context.Context, userPoint *point.UserPoint) error {
+	query := `
+		INSERT INTO user_points (user_id, available_balance, pending_balance, total_earned, total_used, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?)
+	`
+	
+	db := r.tm.GetDBOrTx(ctx)
+	_, err := db.ExecContext(ctx, query,
+		userPoint.UserID,
+		userPoint.AvailableBalance,
+		userPoint.PendingBalance,
+		userPoint.TotalEarned,
+		userPoint.TotalUsed,
+		time.Now(),
+	)
+	return err
+}
+
 // UpdateUserPoint 사용자 포인트 업데이트
 func (r *PointRepository) UpdateUserPoint(ctx context.Context, userPoint *point.UserPoint) error {
 	query := `

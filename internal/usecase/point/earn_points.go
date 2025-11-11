@@ -27,7 +27,7 @@ func (uc *EarnPointsUseCase) EarnPointsFromPurchase(ctx context.Context, userID 
 	return uc.tm.WithTransaction(ctx, func(txCtx context.Context) error {
 		// 1. 포인트 잔액 조회
 		userPoint, err := uc.repo.GetUserPoint(txCtx, userID)
-		if err != nil {
+		if err == point.ErrPointNotFound {
 			// 없으면 생성
 			userPoint = &point.UserPoint{
 				UserID:           userID,
@@ -37,6 +37,11 @@ func (uc *EarnPointsUseCase) EarnPointsFromPurchase(ctx context.Context, userID 
 				TotalUsed:        0,
 				UpdatedAt:        time.Now(),
 			}
+			if err := uc.repo.CreateUserPoint(txCtx, userPoint); err != nil {
+				return err
+			}
+		} else if err != nil {
+			return err
 		}
 
 		// 2. 적립 포인트 계산
@@ -81,7 +86,7 @@ func (uc *EarnPointsUseCase) EarnPointsFromReview(ctx context.Context, userID in
 	return uc.tm.WithTransaction(ctx, func(txCtx context.Context) error {
 		// 1. 포인트 잔액 조회
 		userPoint, err := uc.repo.GetUserPoint(txCtx, userID)
-		if err != nil {
+		if err == point.ErrPointNotFound {
 			userPoint = &point.UserPoint{
 				UserID:           userID,
 				AvailableBalance: 0,
@@ -90,6 +95,11 @@ func (uc *EarnPointsUseCase) EarnPointsFromReview(ctx context.Context, userID in
 				TotalUsed:        0,
 				UpdatedAt:        time.Now(),
 			}
+			if err := uc.repo.CreateUserPoint(txCtx, userPoint); err != nil {
+				return err
+			}
+		} else if err != nil {
+			return err
 		}
 
 		// 2. 적립 포인트 계산
@@ -138,7 +148,7 @@ func (uc *EarnPointsUseCase) EarnSignupBonus(ctx context.Context, userID int64) 
 	return uc.tm.WithTransaction(ctx, func(txCtx context.Context) error {
 		// 1. 포인트 잔액 조회
 		userPoint, err := uc.repo.GetUserPoint(txCtx, userID)
-		if err != nil {
+		if err == point.ErrPointNotFound {
 			userPoint = &point.UserPoint{
 				UserID:           userID,
 				AvailableBalance: 0,
@@ -147,6 +157,11 @@ func (uc *EarnPointsUseCase) EarnSignupBonus(ctx context.Context, userID int64) 
 				TotalUsed:        0,
 				UpdatedAt:        time.Now(),
 			}
+			if err := uc.repo.CreateUserPoint(txCtx, userPoint); err != nil {
+				return err
+			}
+		} else if err != nil {
+			return err
 		}
 
 		// 2. 가입 보너스 적립
