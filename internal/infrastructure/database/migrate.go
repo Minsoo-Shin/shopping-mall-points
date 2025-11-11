@@ -30,7 +30,7 @@ func Migrate(db *sql.DB, migrationsDir string) error {
 
 		// SQL 파일 전체를 하나의 트랜잭션으로 실행
 		sqlContent := string(sqlBytes)
-		
+
 		// 주석 제거 (간단한 처리)
 		lines := strings.Split(sqlContent, "\n")
 		var cleanLines []string
@@ -54,8 +54,8 @@ func Migrate(db *sql.DB, migrationsDir string) error {
 			// SQL 실행
 			if _, err := db.Exec(stmt); err != nil {
 				// 이미 존재하는 테이블은 무시 (IF NOT EXISTS)
-				if strings.Contains(err.Error(), "already exists") || 
-				   strings.Contains(err.Error(), "Duplicate") {
+				if strings.Contains(err.Error(), "already exists") ||
+					strings.Contains(err.Error(), "Duplicate") {
 					fmt.Printf("⚠ Table already exists in %s, skipping\n", file.Name())
 					continue
 				}
@@ -119,4 +119,3 @@ func InitDatabase(cfg Config, migrationsDir string) error {
 
 	return nil
 }
-

@@ -19,6 +19,15 @@ func main() {
 	}
 
 	log.Printf("Initializing database: %s", cfg.MySQL.Database)
+	log.Printf("MySQL Host: %s:%d", cfg.MySQL.Host, cfg.MySQL.Port)
+	log.Printf("MySQL User: %s", cfg.MySQL.User)
+	
+	// 비밀번호 확인
+	if cfg.MySQL.Password == "" {
+		log.Println("⚠ Warning: MYSQL_PASSWORD is not set. Using empty password.")
+		log.Println("   Set MYSQL_PASSWORD environment variable if your MySQL requires a password.")
+	}
+	
 	log.Printf("Migrations directory: %s", migrationsDir)
 
 	// 데이터베이스 초기화
