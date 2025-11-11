@@ -34,21 +34,45 @@ shopping-mall/
 
 ```bash
 # 서버 설정
-SERVER_PORT=3000
-ENV=development
+export SERVER_PORT=8080
+export ENV=development
 
-# MySQL 설정
-MYSQL_HOST=localhost
-MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=password
-MYSQL_DATABASE=shopping_mall
+# MySQL 설정 (필수)
+export MYSQL_HOST=localhost
+export MYSQL_PORT=3306
+export MYSQL_USER=root
+export MYSQL_PASSWORD=your_password  # MySQL root 비밀번호
+export MYSQL_DATABASE=shopping_mall
 
-# Redis 설정
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-REDIS_DB=0
+# Redis 설정 (선택사항)
+export REDIS_HOST=localhost
+export REDIS_PORT=6379
+export REDIS_PASSWORD=
+export REDIS_DB=0
+```
+
+### 빠른 시작 (Docker 사용 시)
+
+```bash
+# 1. MySQL Docker 컨테이너 실행
+docker run --name mysql-shopping-mall \
+  -e MYSQL_ROOT_PASSWORD=password \
+  -e MYSQL_DATABASE=shopping_mall \
+  -p 3306:3306 \
+  -d mysql:8.0
+
+# 2. 환경 변수 설정
+export MYSQL_HOST=localhost
+export MYSQL_PORT=3306
+export MYSQL_USER=root
+export MYSQL_PASSWORD=password
+export MYSQL_DATABASE=shopping_mall
+
+# 3. 마이그레이션 실행
+go run cmd/migrate/main.go
+
+# 4. API 서버 실행
+go run cmd/api/main.go
 ```
 
 ## 데이터베이스 초기화
