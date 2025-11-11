@@ -34,19 +34,19 @@ const (
 
 // Transaction 포인트 거래 내역
 type Transaction struct {
-	ID            int64
-	UserID        int64
-	Type          TransactionType
-	Amount        int64
-	BalanceAfter  int64
-	ReasonType    ReasonType
-	ReasonDetail  string
-	OrderID       *int64
-	EarnedAt      *time.Time
-	ExpiresAt     *time.Time
-	Expired       bool
-	Status        TransactionStatus
-	CreatedAt     time.Time
+	ID           int64
+	UserID       int64
+	Type         TransactionType
+	Amount       int64
+	BalanceAfter int64
+	ReasonType   ReasonType
+	ReasonDetail string
+	OrderID      *int64
+	EarnedAt     *time.Time
+	ExpiresAt    *time.Time
+	Expired      bool
+	Status       TransactionStatus
+	CreatedAt    time.Time
 }
 
 // IsExpired 만료 여부 확인
@@ -56,4 +56,3 @@ func (t *Transaction) IsExpired() bool {
 	}
 	return t.Expired || time.Now().After(*t.ExpiresAt)
 }
-
