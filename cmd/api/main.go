@@ -33,18 +33,21 @@ func main() {
 	}
 	defer zapLogger.Sync()
 	
-	// MySQL 연결
-	db, err := database.NewMySQL(database.Config{
+	// MySQL 연결 및 초기화
+	migrationsDir := "migrations"
+	db, err := database.NewMySQLWithInit(database.Config{
 		Host:     cfg.MySQL.Host,
 		Port:     cfg.MySQL.Port,
 		User:     cfg.MySQL.User,
 		Password: cfg.MySQL.Password,
 		Database: cfg.MySQL.Database,
-	})
+	}, migrationsDir)
 	if err != nil {
 		zapLogger.Fatal("Failed to connect to MySQL", zap.Error(err))
 	}
 	defer db.Close()
+	
+	zapLogger.Info("MySQL connected and initialized successfully")
 	
 	// Redis 연결
 	redisClient, err := cache.NewRedis(cache.Config{
