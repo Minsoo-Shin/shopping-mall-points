@@ -4,7 +4,7 @@ import "time"
 
 // UserPoint 사용자 포인트 집계 루트
 type UserPoint struct {
-	UserID          int64
+	UserID           int64
 	AvailableBalance int64 // 사용 가능 포인트
 	PendingBalance   int64 // 적립 예정 포인트
 	TotalEarned      int64 // 누적 적립
@@ -67,4 +67,3 @@ func (up *UserPoint) Expire(amount int64) {
 		up.UpdatedAt = time.Now()
 	}
 }
-
