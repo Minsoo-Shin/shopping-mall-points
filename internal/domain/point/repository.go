@@ -9,10 +9,10 @@ import (
 type Repository interface {
 	// GetUserPoint 사용자 포인트 조회 (락 포함)
 	GetUserPoint(ctx context.Context, userID int64) (*UserPoint, error)
-	
+
 	// CreateUserPoint 사용자 포인트 생성
 	CreateUserPoint(ctx context.Context, userPoint *UserPoint) error
-	
+
 	// UpdateUserPoint 사용자 포인트 업데이트
 	UpdateUserPoint(ctx context.Context, userPoint *UserPoint) error
 

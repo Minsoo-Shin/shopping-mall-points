@@ -56,7 +56,7 @@ func (r *PointRepository) CreateUserPoint(ctx context.Context, userPoint *point.
 		INSERT INTO user_points (user_id, available_balance, pending_balance, total_earned, total_used, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?)
 	`
-	
+
 	db := r.tm.GetDBOrTx(ctx)
 	_, err := db.ExecContext(ctx, query,
 		userPoint.UserID,
