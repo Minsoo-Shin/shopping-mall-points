@@ -34,7 +34,7 @@ shopping-mall/
 
 ```bash
 # 서버 설정
-SERVER_PORT=8080
+SERVER_PORT=3000
 ENV=development
 
 # MySQL 설정
@@ -58,7 +58,20 @@ REDIS_DB=0
 1. **자동 데이터베이스 생성**: 지정한 데이터베이스가 없으면 자동으로 생성합니다.
 2. **자동 마이그레이션**: `migrations/` 디렉토리의 SQL 파일들을 자동으로 실행합니다.
 
-수동으로 마이그레이션을 실행하려면:
+### 수동 마이그레이션 실행
+
+마이그레이션을 수동으로 실행하려면:
+
+```bash
+# 마이그레이션 도구 사용
+go run cmd/migrate/main.go
+
+# 또는 빌드 후 실행
+go build -o bin/migrate ./cmd/migrate
+./bin/migrate
+```
+
+### MySQL CLI로 직접 실행
 
 ```bash
 mysql -u root -p shopping_mall < migrations/001_create_user_points.sql

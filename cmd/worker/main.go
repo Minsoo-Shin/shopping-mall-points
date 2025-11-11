@@ -41,7 +41,7 @@ func main() {
 		zapLogger.Fatal("Failed to connect to MySQL", zap.Error(err))
 	}
 	defer db.Close()
-	
+
 	zapLogger.Info("MySQL connected and initialized successfully")
 
 	// Repository 초기화

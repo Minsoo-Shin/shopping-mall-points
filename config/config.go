@@ -39,7 +39,7 @@ type RedisConfig struct {
 func Load() *Config {
 	return &Config{
 		Server: ServerConfig{
-			Port: getEnv("SERVER_PORT", "8080"),
+			Port: getEnv("SERVER_PORT", "3000"),
 			Env:  getEnv("ENV", "development"),
 		},
 		MySQL: MySQLConfig{
@@ -73,4 +73,3 @@ func getEnvAsInt(key string, defaultValue int) int {
 	}
 	return defaultValue
 }
-

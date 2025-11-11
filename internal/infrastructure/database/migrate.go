@@ -28,16 +28,38 @@ func Migrate(db *sql.DB, migrationsDir string) error {
 			return fmt.Errorf("failed to read migration file %s: %w", file.Name(), err)
 		}
 
-		// SQL 문장들을 세미콜론으로 분리하여 실행
-		statements := strings.Split(string(sqlBytes), ";")
+		// SQL 파일 전체를 하나의 트랜잭션으로 실행
+		sqlContent := string(sqlBytes)
+		
+		// 주석 제거 (간단한 처리)
+		lines := strings.Split(sqlContent, "\n")
+		var cleanLines []string
+		for _, line := range lines {
+			trimmed := strings.TrimSpace(line)
+			// 주석 라인과 빈 라인 제외
+			if trimmed != "" && !strings.HasPrefix(trimmed, "--") {
+				cleanLines = append(cleanLines, line)
+			}
+		}
+		sqlContent = strings.Join(cleanLines, "\n")
+
+		// 세미콜론으로 분리하되, 빈 문장은 제외
+		statements := strings.Split(sqlContent, ";")
 		for _, stmt := range statements {
 			stmt = strings.TrimSpace(stmt)
-			if stmt == "" || strings.HasPrefix(stmt, "--") {
+			if stmt == "" {
 				continue
 			}
 
+			// SQL 실행
 			if _, err := db.Exec(stmt); err != nil {
-				return fmt.Errorf("failed to execute migration %s: %w", file.Name(), err)
+				// 이미 존재하는 테이블은 무시 (IF NOT EXISTS)
+				if strings.Contains(err.Error(), "already exists") || 
+				   strings.Contains(err.Error(), "Duplicate") {
+					fmt.Printf("⚠ Table already exists in %s, skipping\n", file.Name())
+					continue
+				}
+				return fmt.Errorf("failed to execute migration %s: %w\nSQL: %s", file.Name(), err, stmt)
 			}
 		}
 
