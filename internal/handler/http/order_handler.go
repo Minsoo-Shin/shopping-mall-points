@@ -5,27 +5,28 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
 	"shopping-mall/internal/handler/dto"
-	"shopping-mall/internal/usecase/point"
+	pointUseCase "shopping-mall/internal/usecase/point"
+
+	"github.com/gorilla/mux"
 )
 
 // OrderHandler 주문 핸들러 (포인트 관련)
 type OrderHandler struct {
-	useUseCase  *point.UsePointsUseCase
-	earnUseCase *point.EarnPointsUseCase
-	refundUseCase *point.RefundPointsUseCase
+	useUseCase    *pointUseCase.UsePointsUseCase
+	earnUseCase   *pointUseCase.EarnPointsUseCase
+	refundUseCase *pointUseCase.RefundPointsUseCase
 }
 
 // NewOrderHandler 주문 핸들러 생성
 func NewOrderHandler(
-	useUseCase *point.UsePointsUseCase,
-	earnUseCase *point.EarnPointsUseCase,
-	refundUseCase *point.RefundPointsUseCase,
+	useUseCase *pointUseCase.UsePointsUseCase,
+	earnUseCase *pointUseCase.EarnPointsUseCase,
+	refundUseCase *pointUseCase.RefundPointsUseCase,
 ) *OrderHandler {
 	return &OrderHandler{
-		useUseCase:   useUseCase,
-		earnUseCase:  earnUseCase,
+		useUseCase:    useUseCase,
+		earnUseCase:   earnUseCase,
 		refundUseCase: refundUseCase,
 	}
 }
@@ -39,26 +40,26 @@ func (h *OrderHandler) ConfirmOrder(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "invalid order_id")
 		return
 	}
-	
+
 	userID, err := getUserID(r)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, "invalid user_id")
 		return
 	}
-	
+
 	var req dto.EarnPointsRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	
+
 	req.OrderID = orderID
 	ctx := r.Context()
 	if err := h.earnUseCase.EarnPointsFromPurchase(ctx, userID, req.PaymentAmount, req.OrderID); err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	
+
 	respondJSON(w, http.StatusOK, map[string]string{"message": "order confirmed and points earned"})
 }
 
@@ -71,19 +72,18 @@ func (h *OrderHandler) RefundOrder(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "invalid order_id")
 		return
 	}
-	
+
 	userID, err := getUserID(r)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, "invalid user_id")
 		return
 	}
-	
+
 	ctx := r.Context()
 	if err := h.refundUseCase.RefundPoints(ctx, userID, orderID); err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	
+
 	respondJSON(w, http.StatusOK, map[string]string{"message": "order refunded and points processed"})
 }
-

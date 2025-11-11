@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 	"shopping-mall/config"
 	"shopping-mall/internal/domain/point"
-	"shopping-mall/internal/handler/http"
+	httpHandler "shopping-mall/internal/handler/http"
 	"shopping-mall/internal/infrastructure/cache"
 	"shopping-mall/internal/infrastructure/database"
 	"shopping-mall/internal/infrastructure/logger"
@@ -76,8 +76,8 @@ func main() {
 	refundUseCase := pointUseCase.NewRefundPointsUseCase(pointRepo, tm)
 	
 	// Handler 초기화
-	pointHandler := http.NewPointHandler(queryUseCase, useUseCase, earnUseCase)
-	orderHandler := http.NewOrderHandler(useUseCase, earnUseCase, refundUseCase)
+	pointHandler := httpHandler.NewPointHandler(queryUseCase, useUseCase, earnUseCase)
+	orderHandler := httpHandler.NewOrderHandler(useUseCase, earnUseCase, refundUseCase)
 	
 	// Router 설정
 	router := mux.NewRouter()
