@@ -12,17 +12,17 @@ type Policy struct {
 	MaxEarnPerOrder   int64   // 주문당 최대 적립
 	ExpiryMonths      int     // 유효기간 (월)
 	EarnDelayDays     int     // 적립 지연 일수
-	
-	MinUseAmount      int64   // 최소 사용 금액
-	UseUnit           int64   // 사용 단위
-	MaxUseRate        float64 // 최대 사용 비율 (0.5 = 50%)
-	MinPaymentAmount  int64   // 최소 결제 금액
+
+	MinUseAmount     int64   // 최소 사용 금액
+	UseUnit          int64   // 사용 단위
+	MaxUseRate       float64 // 최대 사용 비율 (0.5 = 50%)
+	MinPaymentAmount int64   // 최소 결제 금액
 }
 
 // NewDefaultPolicy 기본 정책 생성
 func NewDefaultPolicy() *Policy {
 	return &Policy{
-		EarnRate:          0.05,  // 5%
+		EarnRate:          0.05, // 5%
 		ReviewTextPoints:  100,
 		ReviewPhotoPoints: 500,
 		SignupBonus:       3000,
@@ -30,7 +30,7 @@ func NewDefaultPolicy() *Policy {
 		MaxEarnPerOrder:   50000,
 		ExpiryMonths:      12,
 		EarnDelayDays:     7,
-		
+
 		MinUseAmount:     1000,
 		UseUnit:          100,
 		MaxUseRate:       0.5, // 50%
@@ -53,29 +53,29 @@ func (p *Policy) ValidateUse(useAmount, orderAmount, availableBalance int64) err
 	if useAmount < p.MinUseAmount {
 		return ErrBelowMinUseAmount
 	}
-	
+
 	// 사용 단위 체크
 	if useAmount%p.UseUnit != 0 {
 		return ErrInvalidUseUnit
 	}
-	
+
 	// 보유 포인트 확인
 	if availableBalance < useAmount {
 		return ErrInsufficientPoints
 	}
-	
+
 	// 최대 사용 비율 체크
 	maxUseAmount := int64(float64(orderAmount) * p.MaxUseRate)
 	if useAmount > maxUseAmount {
 		return ErrExceedMaxUseRate
 	}
-	
+
 	// 최소 결제 금액 체크 (전액 포인트 결제 방지)
 	paymentAmount := orderAmount - useAmount
 	if paymentAmount < p.MinPaymentAmount {
 		return ErrBelowMinPayment
 	}
-	
+
 	return nil
 }
 
@@ -88,4 +88,3 @@ func (p *Policy) CalculateExpiryDate(earnedAt time.Time) time.Time {
 func (p *Policy) CalculateEarnDate(confirmedAt time.Time) time.Time {
 	return confirmedAt.AddDate(0, 0, p.EarnDelayDays)
 }
-
